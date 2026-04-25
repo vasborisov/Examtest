@@ -60,11 +60,11 @@
                             <div class="col-lg-2">
                                 <select name="sortBy" class="form-select">
                                     <option value="">Sort by Name (A-Z)</option>
-                                    <option value="name_desc" @(ViewBag.CurrentSort == "name_desc" ? "selected" : "")>Name (Z-A)</option>
-                                    <option value="location" @(ViewBag.CurrentSort == "location" ? "selected" : "")>Location (A-Z)</option>
-                                    <option value="location_desc" @(ViewBag.CurrentSort == "location_desc" ? "selected" : "")>Location (Z-A)</option>
-                                    <option value="newest" @(ViewBag.CurrentSort == "newest" ? "selected" : "")>Newest First</option>
-                                    <option value="oldest" @(ViewBag.CurrentSort == "oldest" ? "selected" : "")>Oldest First</option>
+                                    <option value="name_desc" selected="@(ViewBag.CurrentSort == "name_desc")">Name (Z-A)</option>
+                                    <option value="location" selected="@(ViewBag.CurrentSort == "location")">Location (A-Z)</option>
+                                    <option value="location_desc" selected="@(ViewBag.CurrentSort == "location_desc")">Location (Z-A)</option>
+                                    <option value="newest" selected="@(ViewBag.CurrentSort == "newest")">Newest First</option>
+                                    <option value="oldest" selected="@(ViewBag.CurrentSort == "oldest")">Oldest First</option>
                                 </select>
                             </div>
 
@@ -118,12 +118,16 @@
         <div class="col-md-4 text-end">
             <!-- Quick Sort Links -->
             <div class="btn-group btn-group-sm" role="group">
+                @{
+                    var nameButtonClass = string.IsNullOrEmpty(ViewBag.CurrentSort) ? "btn btn-primary" : "btn btn-outline-secondary";
+                    var newestButtonClass = ViewBag.CurrentSort == "newest" ? "btn btn-primary" : "btn btn-outline-secondary";
+                }
                 <a asp-action="Index" asp-route-search="@ViewBag.SearchTerm" asp-route-location="@ViewBag.LocationFilter" 
-                   class="btn @(string.IsNullOrEmpty(ViewBag.CurrentSort) ? "btn-primary" : "btn-outline-secondary")">
+                   class="@nameButtonClass">
                     Name <i class="fas fa-sort-alpha-up"></i>
                 </a>
                 <a asp-action="Index" asp-route-search="@ViewBag.SearchTerm" asp-route-location="@ViewBag.LocationFilter" asp-route-sortBy="newest"
-                   class="btn @(ViewBag.CurrentSort == "newest" ? "btn-primary" : "btn-outline-secondary")">
+                   class="@newestButtonClass">
                     Newest <i class="fas fa-sort-numeric-down"></i>
                 </a>
             </div>

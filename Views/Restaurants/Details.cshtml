@@ -152,7 +152,7 @@
                                 <select id="peopleCount" name="peopleCount" class="form-select" required>
                                     @for (int i = 1; i <= 20; i++)
                                     {
-                                        <option value="@i" @(i == 2 ? "selected" : "")>
+                                        <option value="@i" selected="@(i == 2)">
                                             @i @(i == 1 ? "person" : "people")
                                         </option>
                                     }
