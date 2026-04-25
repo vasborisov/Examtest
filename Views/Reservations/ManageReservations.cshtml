@@ -1,0 +1,279 @@
+@model IEnumerable<proekt_za_6ca.Data.Entities.Reservation>
+
+@{
+    ViewData["Title"] = "Manage Reservations";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5">
+                <i class="fas fa-calendar-check text-success"></i> Reservation Management
+            </h1>
+            <p class="lead text-muted">Manage reservations for your restaurants</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <a asp-controller="Restaurants" asp-action="Index" class="btn btn-outline-primary">
+                    <i class="fas fa-utensils"></i> My Restaurants
+                </a>
+                <a asp-controller="Restaurants" asp-action="Create" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add Restaurant
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-triangle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                    <h3 class="text-warning mb-1">@ViewBag.PendingCount</h3>
+                    <small class="text-muted">Pending Approval</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <h3 class="text-success mb-1">@ViewBag.ConfirmedCount</h3>
+                    <small class="text-muted">Confirmed</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-times-circle fa-2x text-danger mb-2"></i>
+                    <h3 class="text-danger mb-1">@ViewBag.DeniedCount</h3>
+                    <small class="text-muted">Denied</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-alt fa-2x text-info mb-2"></i>
+                    <h3 class="text-info mb-1">@Model.Count()</h3>
+                    <small class="text-muted">Total Reservations</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservations List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list"></i> All Reservations
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary active" onclick="filterReservations('all')">
+                            All (@Model.Count())
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" onclick="filterReservations('pending')">
+                            Pending (@ViewBag.PendingCount)
+                        </button>
+                        <button type="button" class="btn btn-outline-success" onclick="filterReservations('confirmed')">
+                            Confirmed (@ViewBag.ConfirmedCount)
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" onclick="filterReservations('denied')">
+                            Denied (@ViewBag.DeniedCount)
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="reservationsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th><i class="fas fa-calendar"></i> Date & Time</th>
+                                        <th><i class="fas fa-utensils"></i> Restaurant</th>
+                                        <th><i class="fas fa-user"></i> Customer</th>
+                                        <th><i class="fas fa-users"></i> Guests</th>
+                                        <th><i class="fas fa-comment"></i> Comment</th>
+                                        <th><i class="fas fa-info-circle"></i> Status</th>
+                                        <th class="text-center"><i class="fas fa-cogs"></i> Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var reservation in Model)
+                                    {
+                                        <tr class="reservation-row" data-status="@reservation.Status.ToString().ToLower()">
+                                            <td>
+                                                <strong>@reservation.ReservationTime.ToString("MMM dd, yyyy")</strong><br>
+                                                <small class="text-muted">@reservation.ReservationTime.ToString("HH:mm")</small>
+                                            </td>
+                                            <td>
+                                                <strong>@reservation.Restaurants?.Title</strong><br>
+                                                <small class="text-muted">@reservation.Restaurants?.Address</small>
+                                            </td>
+                                            <td>
+                                                <strong>@reservation.Owner?.FirstName @reservation.Owner?.LastName</strong><br>
+                                                <small class="text-muted">@reservation.Owner?.Email</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@reservation.PeopleCount</span>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(reservation.Comment))
+                                                {
+                                                    <span title="@reservation.Comment">
+                                                        @(reservation.Comment.Length > 30 ? reservation.Comment.Substring(0, 30) + "..." : reservation.Comment)
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">No comment</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (reservation.Status)
+                                                {
+                                                    case proekt_za_6ca.Data.Enums.ReservationStatus.Pending:
+                                                        <span class="badge bg-warning">
+                                                            <i class="fas fa-clock"></i> Pending
+                                                        </span>
+                                                        break;
+                                                    case proekt_za_6ca.Data.Enums.ReservationStatus.Confirmed:
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-check"></i> Confirmed
+                                                        </span>
+                                                        break;
+                                                    case proekt_za_6ca.Data.Enums.ReservationStatus.Denied:
+                                                        <span class="badge bg-danger">
+                                                            <i class="fas fa-times"></i> Denied
+                                                        </span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                @if (reservation.Status == proekt_za_6ca.Data.Enums.ReservationStatus.Pending)
+                                                {
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <form asp-action="ApproveReservation" method="post" class="d-inline">
+                                                            <input type="hidden" name="id" value="@reservation.Id" />
+                                                            <button type="submit" class="btn btn-success btn-sm" 
+                                                                    onclick="return confirm('Approve this reservation?')" 
+                                                                    title="Approve Reservation">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                        </form>
+                                                        <form asp-action="RejectReservation" method="post" class="d-inline">
+                                                            <input type="hidden" name="id" value="@reservation.Id" />
+                                                            <button type="submit" class="btn btn-danger btn-sm" 
+                                                                    onclick="return confirm('Reject this reservation?')" 
+                                                                    title="Reject Reservation">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">
+                                                        <i class="fas fa-lock"></i> Processed
+                                                    </span>
+                                                }
+                                                <a asp-controller="Reservations" asp-action="Details" asp-route-id="@reservation.Id" 
+                                                   class="btn btn-outline-info btn-sm ms-1" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                            <h4 class="text-muted">No reservations yet</h4>
+                            <p class="text-muted">Reservations for your restaurants will appear here</p>
+                            <a asp-controller="Restaurants" asp-action="Index" class="btn btn-primary">
+                                <i class="fas fa-utensils"></i> View My Restaurants
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterReservations(status) {
+        const rows = document.querySelectorAll('.reservation-row');
+        const buttons = document.querySelectorAll('.btn-group button');
+        
+        // Update active button
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // Filter rows
+        rows.forEach(row => {
+            if (status === 'all' || row.dataset.status === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    
+    // Add confirmation for form submissions
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form[asp-action]');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const button = e.target.querySelector('button[type="submit"]');
+                if (button) {
+                    button.disabled = true;
+                    setTimeout(() => {
+                        button.disabled = false;
+                    }, 3000);
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    .reservation-row {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-group .btn {
+        transition: all 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+    }
+</style>
