@@ -1,0 +1,101 @@
+@model proekt_za_6ca.ViewModels.EditUserViewModel
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Admin Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Users">User Management</a></li>
+                    <li class="breadcrumb-item active">Edit User</li>
+                </ol>
+            </nav>
+            <h1 class="display-5">
+                <i class="fas fa-user-edit text-primary"></i> Edit User
+            </h1>
+            <p class="lead text-muted">Update user information and role</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-edit"></i> User Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <form asp-action="EditUser" method="post">
+                        <input asp-for="Id" type="hidden" />
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="FirstName" class="form-control form-control-lg" placeholder="First Name">
+                                    <label asp-for="FirstName" class="form-label">
+                                        <i class="fas fa-user"></i> First Name
+                                    </label>
+                                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    <input asp-for="LastName" class="form-control form-control-lg" placeholder="Last Name">
+                                    <label asp-for="LastName" class="form-label">
+                                        <i class="fas fa-user"></i> Last Name
+                                    </label>
+                                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input asp-for="Email" class="form-control form-control-lg" placeholder="Email Address" readonly>
+                                <label asp-for="Email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email Address
+                                </label>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <small class="text-muted">Email address cannot be changed</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Role" class="form-label fw-bold">
+                                <i class="fas fa-user-tag"></i> User Role
+                            </label>
+                            <select asp-for="Role" class="form-select form-select-lg" asp-items="ViewBag.Roles">
+                                <option value="">Select a role...</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger small"></span>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-action="Users" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-arrow-left"></i> Back to Users
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> Update User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

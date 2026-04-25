@@ -1,0 +1,111 @@
+@model proekt_za_6ca.Data.Entities.Restaurants
+
+@{
+    ViewData["Title"] = "Delete Restaurant";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Admin Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Restaurants">Restaurant Management</a></li>
+                    <li class="breadcrumb-item active">Delete Restaurant</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 text-danger">
+                <i class="fas fa-trash-alt"></i> Delete Restaurant
+            </h1>
+            <p class="lead text-muted">Are you sure you want to delete this restaurant?</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="alert alert-warning border-0 shadow-sm" role="alert">
+                <h4 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle"></i> Warning!
+                </h4>
+                <p class="mb-0">
+                    This action cannot be undone. Deleting this restaurant will permanently remove it 
+                    and all associated reservations from the system.
+                </p>
+            </div>
+
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-utensils"></i> Restaurant Details
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <dl class="row">
+                                <dt class="col-4">Restaurant Name:</dt>
+                                <dd class="col-8">@Model.Title</dd>
+                                
+                                <dt class="col-4">Description:</dt>
+                                <dd class="col-8">@Model.Description</dd>
+                                
+                                <dt class="col-4">Address:</dt>
+                                <dd class="col-8">@Model.Address</dd>
+                                
+                                <dt class="col-4">Location:</dt>
+                                <dd class="col-8">@Model.Latitude°, @Model.Longitude°</dd>
+                                
+                                <dt class="col-4">Owner:</dt>
+                                <dd class="col-8">
+                                    @if (Model.Owner != null)
+                                    {
+                                        <span>@Model.Owner.FirstName @Model.Owner.LastName</span>
+                                        <br><small class="text-muted">@Model.Owner.Email</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Owner information not available</span>
+                                    }
+                                </dd>
+                                
+                                <dt class="col-4">Created:</dt>
+                                <dd class="col-8">@Model.CreatedOn.ToString("MMM dd, yyyy")</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" alt="@Model.Title" 
+                                     class="img-fluid rounded shadow-sm mb-3" style="max-height: 200px;">
+                            }
+                            else
+                            {
+                                <div class="p-4 bg-light rounded mb-3">
+                                    <i class="fas fa-utensils fa-3x text-muted"></i>
+                                    <p class="text-muted mt-2">No image available</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Restaurants" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Cancel
+                        </a>
+                        
+                        <form asp-action="DeleteRestaurantConfirmed" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-danger btn-lg" 
+                                    onclick="return confirm('Are you absolutely sure you want to delete this restaurant and all its reservations?')">
+                                <i class="fas fa-trash-alt"></i> Delete Restaurant
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

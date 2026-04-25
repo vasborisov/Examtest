@@ -1,15 +1,32 @@
 ﻿@model IEnumerable<proekt_za_6ca.Data.Entities.Reservation>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Reservations";
 }
 
-<h1>Index</h1>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="fas fa-calendar-check"></i> My Reservations
+            </h1>
+            <p class="lead">View and manage your restaurant reservations</p>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Create New Reservation
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <table class="table table-hover">
     <thead>
         <tr>
             <th>
@@ -19,7 +36,7 @@
                 @Html.DisplayNameFor(model => model.PeopleCount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Restaurants)
+                Restaurant
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Comment)
@@ -28,7 +45,7 @@
                 @Html.DisplayNameFor(model => model.Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Owner)
+                Owner
             </th>
             <th></th>
         </tr>
@@ -43,7 +60,7 @@
                 @Html.DisplayFor(modelItem => item.PeopleCount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Restaurants.Address)
+                @(item.Restaurants?.Title ?? "N/A")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Comment)
@@ -52,7 +69,7 @@
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Owner.Id)
+                @(item.Owner?.Email ?? "N/A")
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
@@ -62,4 +79,9 @@
         </tr>
 }
     </tbody>
-</table>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
