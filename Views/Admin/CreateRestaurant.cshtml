@@ -1,4 +1,4 @@
-@model proekt_za_6ca.Data.Entities.Restaurants
+@model proekt_za_6ca.ViewModels.RestaurantCreateViewModel
 
 @{
     ViewData["Title"] = "Create Restaurant";
@@ -31,7 +31,7 @@
                     </h5>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="CreateRestaurant" method="post" asp-antiforgery="true">
+                    <form asp-action="CreateRestaurant" method="post" enctype="multipart/form-data" asp-antiforgery="true">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                         <div class="row">
@@ -60,12 +60,25 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label asp-for="ImageFile" class="form-label">
+                                        <i class="fas fa-upload"></i> Upload Photo
+                                    </label>
+                                    <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
+                                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                                    <small class="form-text text-muted">Upload a photo (JPG, PNG, GIF, WebP) - Max 2MB</small>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <span class="text-muted">OR</span>
+                                </div>
+
+                                <div class="mb-3">
                                     <label asp-for="ImageUrl" class="form-label">
-                                        <i class="fas fa-image"></i> Photo URL
+                                        <i class="fas fa-link"></i> Photo URL
                                     </label>
                                     <input asp-for="ImageUrl" class="form-control form-control-lg" placeholder="https://example.com/restaurant-photo.jpg">
                                     <span asp-validation-for="ImageUrl" class="text-danger"></span>
-                                    <small class="form-text text-muted">Enter a valid image URL</small>
+                                    <small class="form-text text-muted">Or provide an image URL</small>
                                 </div>
                             </div>
 

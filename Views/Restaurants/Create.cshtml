@@ -1,58 +1,220 @@
-﻿@model proekt_za_6ca.Data.Entities.Restaurants
+﻿@model proekt_za_6ca.ViewModels.RestaurantCreateViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Restaurant";
 }
 
-<h1>Create</h1>
-
-<h4>Restaurants</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Latitude" class="control-label"></label>
-                <input asp-for="Latitude" class="form-control" />
-                <span asp-validation-for="Latitude" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Longitude" class="control-label"></label>
-                <input asp-for="Longitude" class="form-control" />
-                <span asp-validation-for="Longitude" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImageUrl" class="control-label"></label>
-                <input asp-for="ImageUrl" class="form-control" />
-                <span asp-validation-for="ImageUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5">
+                <i class="fas fa-plus text-success"></i> Create Restaurant
+            </h1>
+            <p class="lead text-muted">Add a new restaurant to the system</p>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-utensils"></i> Restaurant Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-lg-6">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-info-circle"></i> Basic Information
+                                </h6>
+
+                                <div class="mb-3">
+                                    <label asp-for="Title" class="form-label"></label>
+                                    <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter restaurant name">
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Description" class="form-label"></label>
+                                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe the restaurant..."></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Address" class="form-label"></label>
+                                    <input asp-for="Address" class="form-control form-control-lg" placeholder="Enter full address">
+                                    <span asp-validation-for="Address" class="text-danger"></span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="Latitude" class="form-label"></label>
+                                            <input asp-for="Latitude" class="form-control" placeholder="42.3601" step="any">
+                                            <span asp-validation-for="Latitude" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="Longitude" class="form-label"></label>
+                                            <input asp-for="Longitude" class="form-control" placeholder="-71.0589" step="any">
+                                            <span asp-validation-for="Longitude" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if (!User.IsInRole("RestaurantOwner"))
+                                {
+                                    <div class="mb-3">
+                                        <label asp-for="OwnerId" class="form-label">
+                                            <i class="fas fa-user-tie"></i> Restaurant Owner
+                                        </label>
+                                        <select asp-for="OwnerId" class="form-select form-select-lg" asp-items="ViewBag.OwnerId">
+                                            <option value="">Select a restaurant owner...</option>
+                                        </select>
+                                        <span asp-validation-for="OwnerId" class="text-danger"></span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <input type="hidden" asp-for="OwnerId" />
+                                }
+                            </div>
+
+                            <!-- Image Upload -->
+                            <div class="col-lg-6">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-image"></i> Restaurant Photo
+                                </h6>
+
+                                <div class="mb-3">
+                                    <label asp-for="ImageFile" class="form-label"></label>
+                                    <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
+                                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                                    <small class="form-text text-muted">
+                                        Upload a photo (JPG, PNG, GIF, WebP) - Max 2MB
+                                    </small>
+                                </div>
+
+                                <div class="text-center mb-3">
+                                    <span class="text-muted">OR</span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="ImageUrl" class="form-label"></label>
+                                    <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/restaurant-photo.jpg">
+                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                    <small class="form-text text-muted">
+                                        Provide an image URL if you prefer
+                                    </small>
+                                </div>
+
+                                <!-- Image Preview -->
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <div id="imagePreview" style="display: none;">
+                                            <img id="previewImg" src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                                        </div>
+                                        <div id="noImagePreview">
+                                            <i class="fas fa-image fa-3x text-muted"></i>
+                                            <p class="text-muted mt-2">Image preview will appear here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                        <i class="fas fa-arrow-left"></i> Back to Restaurants
+                                    </a>
+                                    <div>
+                                        <button type="reset" class="btn btn-outline-secondary btn-lg me-2">
+                                            <i class="fas fa-undo"></i> Reset Form
+                                        </button>
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            <i class="fas fa-plus"></i> Create Restaurant
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageFileInput = document.querySelector('input[name="ImageFile"]');
+            const imageUrlInput = document.querySelector('input[name="ImageUrl"]');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            const noImagePreview = document.getElementById('noImagePreview');
+
+            // File input change handler
+            if (imageFileInput) {
+                imageFileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Clear URL input
+                        if (imageUrlInput) imageUrlInput.value = '';
+                        
+                        // Show preview
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImg.src = e.target.result;
+                            imagePreview.style.display = 'block';
+                            noImagePreview.style.display = 'none';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        hidePreview();
+                    }
+                });
+            }
+
+            // URL input change handler
+            if (imageUrlInput) {
+                imageUrlInput.addEventListener('blur', function(e) {
+                    const url = e.target.value.trim();
+                    if (url) {
+                        // Clear file input
+                        if (imageFileInput) imageFileInput.value = '';
+                        
+                        // Show preview
+                        previewImg.src = url;
+                        imagePreview.style.display = 'block';
+                        noImagePreview.style.display = 'none';
+                        
+                        // Handle load error
+                        previewImg.onerror = function() {
+                            hidePreview();
+                        };
+                    } else {
+                        hidePreview();
+                    }
+                });
+            }
+
+            function hidePreview() {
+                imagePreview.style.display = 'none';
+                noImagePreview.style.display = 'block';
+            }
+        });
+    </script>
 }

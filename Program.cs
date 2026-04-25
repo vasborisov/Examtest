@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using proekt_za_6ca.Data;
 using proekt_za_6ca.Data.Entities;
 using proekt_za_6ca.Data.Seeders;
+using proekt_za_6ca.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
@@ -23,6 +24,9 @@ builder.Services.AddIdentity<User, IdentityRole>(options => options.SignIn.Requi
 
 
 builder.Services.AddControllersWithViews();
+
+// Register image service
+builder.Services.AddScoped<proekt_za_6ca.Services.IImageService, proekt_za_6ca.Services.ImageService>();
 
 var app = builder.Build();
 
@@ -35,6 +39,7 @@ await DatabaseSeeder.SeedAsync(serviceProvider);
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -43,11 +48,15 @@ else
     app.UseHsts();
 }
 
+// Add custom error handling middleware
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

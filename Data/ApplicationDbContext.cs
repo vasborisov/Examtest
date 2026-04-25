@@ -26,7 +26,7 @@ namespace proekt_za_6ca.Data
                 entity.Property(r => r.PeopleCount)
                     .IsRequired();
 
-                entity.Property(r => r.Commend)
+                entity.Property(r => r.Comment)
                     .HasMaxLength(500);
 
                 entity.Property(r => r.Status)
@@ -34,6 +34,9 @@ namespace proekt_za_6ca.Data
                     .HasConversion<string>();
 
                 entity.Property(r => r.OwnerId)
+                    .IsRequired();
+
+                entity.Property(r => r.CreatedOn)
                     .IsRequired();
 
                 // 🔗 Връзка с Restaurant
@@ -76,6 +79,9 @@ namespace proekt_za_6ca.Data
                     .IsRequired();
 
                 entity.Property(r => r.OwnerId)
+                    .IsRequired();
+
+                entity.Property(r => r.CreatedOn)
                     .IsRequired();
 
                 entity.HasOne(r => r.Owner)

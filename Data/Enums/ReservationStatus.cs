@@ -4,6 +4,6 @@
     {
         Pending = 0,
         Confirmed = 1,
-        Denid = 2,
+        Denied = 2,
     }
 }

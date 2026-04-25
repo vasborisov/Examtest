@@ -3,43 +3,165 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - proekt_za_6ca</title>
+    <title>@ViewData["Title"] - Restaurant Reservations</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/proekt_za_6ca.styles.css" asp-append-version="true" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">proekt_za_6ca</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <!-- Brand -->
+                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-utensils me-2"></i>Restaurant Reservations
+                </a>
+                
+                <!-- Mobile Toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Main Navigation -->
+                    <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home me-1"></i>Home
+                            </a>
                         </li>
+                        
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" asp-controller="Restaurants" asp-action="Index">
+                                <i class="fas fa-utensils me-1"></i>Restaurants
+                            </a>
                         </li>
+                        
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <!-- User-specific navigation -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Reservations" asp-action="Index">
+                                    <i class="fas fa-calendar-alt me-1"></i>My Reservations
+                                </a>
+                            </li>
+                            
+                            <!-- Restaurant Owner Navigation -->
+                            @if (User.IsInRole("RestaurantOwner"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="ownerDropdown" role="button" 
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-store me-1"></i>Restaurant Management
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="ownerDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Reservations" asp-action="ManageReservations">
+                                                <i class="fas fa-calendar-check me-2"></i>Manage Reservations
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Restaurants" asp-action="Create">
+                                                <i class="fas fa-plus me-2"></i>Add Restaurant
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Restaurants" asp-action="Index">
+                                                <i class="fas fa-list me-2"></i>View All Restaurants
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                            
+                            <!-- Admin Navigation -->
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" 
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-cog me-1"></i>Admin Panel
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Admin" asp-action="Index">
+                                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Admin" asp-action="Users">
+                                                <i class="fas fa-users me-2"></i>User Management
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Admin" asp-action="Restaurants">
+                                                <i class="fas fa-utensils me-2"></i>Restaurant Management
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Admin" asp-action="CreateUser">
+                                                <i class="fas fa-user-plus me-2"></i>Create User
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Admin" asp-action="CreateRestaurant">
+                                                <i class="fas fa-plus me-2"></i>Create Restaurant
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                        }
                     </ul>
+                    
+                    <!-- User Account Navigation -->
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main" class="flex-grow-1">
+        @RenderBody()
+    </main>
 
-    <footer class="border-top footer text-muted">
+    <footer class="bg-light border-top mt-5 py-4">
         <div class="container">
-            &copy; 2026 - proekt_za_6ca - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-primary">
+                        <i class="fas fa-utensils me-2"></i>Restaurant Reservations
+                    </h6>
+                    <p class="text-muted small mb-0">
+                        Your go-to platform for discovering and booking amazing restaurants.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="mb-2">
+                        <a href="#" class="text-muted me-3">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-muted me-3">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-muted me-3">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-muted">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                    <small class="text-muted">
+                        &copy; 2026 Restaurant Reservations - 
+                        <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-muted">Privacy Policy</a>
+                    </small>
+                </div>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

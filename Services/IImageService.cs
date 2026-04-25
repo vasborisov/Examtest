@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace proekt_za_6ca.Services
 {
     public interface IImageService

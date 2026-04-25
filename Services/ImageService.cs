@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+
 namespace proekt_za_6ca.Services
 {
     public class ImageService : IImageService

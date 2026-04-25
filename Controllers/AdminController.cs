@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using proekt_za_6ca.Data;
 using proekt_za_6ca.Data.Entities;
+using proekt_za_6ca.Services;
+using proekt_za_6ca.ViewModels;
 
 namespace proekt_za_6ca.Controllers
 {
@@ -14,12 +17,14 @@ namespace proekt_za_6ca.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IImageService _imageService;
 
-        public AdminController(ApplicationDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public AdminController(ApplicationDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IImageService imageService)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _imageService = imageService;
         }
 
         // Dashboard
@@ -306,26 +311,67 @@ namespace proekt_za_6ca.Controllers
         {
             var restaurantOwners = await _userManager.GetUsersInRoleAsync("RestaurantOwner");
             ViewBag.RestaurantOwners = new SelectList(restaurantOwners, "Id", "Email");
-            return View();
+            return View(new RestaurantCreateViewModel());
         }
 
         // POST: Admin/CreateRestaurant
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateRestaurant(Restaurants restaurant)
+        public async Task<IActionResult> CreateRestaurant(RestaurantCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                restaurant.Id = Guid.NewGuid();
-                restaurant.CreatedOn = DateTime.Now;
-                _context.Add(restaurant);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Restaurants));
+                // Validate that either ImageFile or ImageUrl is provided
+                if (model.ImageFile == null && string.IsNullOrEmpty(model.ImageUrl))
+                {
+                    ModelState.AddModelError("", "Please either upload an image or provide an image URL.");
+                }
+
+                // Validate image file if provided
+                if (model.ImageFile != null && !_imageService.IsValidImage(model.ImageFile))
+                {
+                    ModelState.AddModelError(nameof(model.ImageFile), "Please upload a valid image file (JPG, PNG, GIF, WebP) under 2MB.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var restaurant = new Restaurants
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = model.Title,
+                        Description = model.Description,
+                        Address = model.Address,
+                        Latitude = model.Latitude,
+                        Longitude = model.Longitude,
+                        OwnerId = model.OwnerId,
+                        CreatedOn = DateTime.Now
+                    };
+
+                    // Handle image upload or URL
+                    if (model.ImageFile != null)
+                    {
+                        restaurant.ImageUrl = await _imageService.SaveImageAsync(model.ImageFile, Request);
+                    }
+                    else if (!string.IsNullOrEmpty(model.ImageUrl))
+                    {
+                        restaurant.ImageUrl = model.ImageUrl;
+                    }
+
+                    _context.Add(restaurant);
+                    await _context.SaveChangesAsync();
+                    
+                    TempData["Success"] = "Restaurant created successfully!";
+                    return RedirectToAction(nameof(Restaurants));
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred while creating the restaurant. Please try again.");
             }
 
             var restaurantOwners = await _userManager.GetUsersInRoleAsync("RestaurantOwner");
-            ViewBag.RestaurantOwners = new SelectList(restaurantOwners, "Id", "Email", restaurant.OwnerId);
-            return View(restaurant);
+            ViewBag.RestaurantOwners = new SelectList(restaurantOwners, "Id", "Email", model.OwnerId);
+            return View(model);
         }
 
         // GET: Admin/EditRestaurant/5
@@ -417,64 +463,4 @@ namespace proekt_za_6ca.Controllers
         }
     }
 
-    // View Models
-    public class UserWithRoleViewModel
-    {
-        public User User { get; set; } = null!;
-        public IList<string> Roles { get; set; } = new List<string>();
-    }
-
-    public class CreateUserViewModel
-    {
-        [Required(ErrorMessage = "Email address is required")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        [StringLength(256, ErrorMessage = "Email address cannot exceed 256 characters")]
-        [Display(Name = "Email Address")]
-        public string Email { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "First name is required")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 50 characters")]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Last name is required")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Last name must be between 2 and 50 characters")]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Password is required")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be between 6 and 100 characters")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Please select a role")]
-        [Display(Name = "User Role")]
-        public string Role { get; set; } = string.Empty;
-    }
-
-    public class EditUserViewModel
-    {
-        public string Id { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Email address is required")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        [StringLength(256, ErrorMessage = "Email address cannot exceed 256 characters")]
-        [Display(Name = "Email Address")]
-        public string Email { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "First name is required")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 50 characters")]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Last name is required")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Last name must be between 2 and 50 characters")]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Please select a role")]
-        [Display(Name = "User Role")]
-        public string Role { get; set; } = string.Empty;
-    }
 }

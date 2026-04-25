@@ -1,25 +1,153 @@
 ﻿@model ErrorViewModel
 @{
     ViewData["Title"] = "Error";
+    var statusCode = ViewContext.HttpContext.Items["StatusCode"]?.ToString();
+    var errorMessage = ViewContext.HttpContext.Items["ErrorMessage"]?.ToString();
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="text-center py-5">
+                <!-- Error Icon -->
+                <div class="error-icon mb-4">
+                    @if (statusCode == "404")
+                    {
+                        <i class="fas fa-search fa-6x text-primary opacity-75"></i>
+                    }
+                    else if (statusCode == "403")
+                    {
+                        <i class="fas fa-lock fa-6x text-warning opacity-75"></i>
+                    }
+                    else if (statusCode == "500")
+                    {
+                        <i class="fas fa-exclamation-triangle fa-6x text-danger opacity-75"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-bug fa-6x text-muted opacity-75"></i>
+                    }
+                </div>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+                <!-- Error Title -->
+                <h1 class="display-4 fw-bold text-primary mb-3">
+                    @if (statusCode == "404")
+                    {
+                        <text>Page Not Found</text>
+                    }
+                    else if (statusCode == "403")
+                    {
+                        <text>Access Denied</text>
+                    }
+                    else if (statusCode == "500")
+                    {
+                        <text>Server Error</text>
+                    }
+                    else
+                    {
+                        <text>Request Error</text>
+                    }
+                </h1>
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+                <!-- Error Message -->
+                <p class="lead text-muted mb-4">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        @errorMessage
+                    }
+                    else if (statusCode == "404")
+                    {
+                        <text>The page you're looking for doesn't exist or has been moved.</text>
+                    }
+                    else if (statusCode == "403")
+                    {
+                        <text>You don't have permission to access this resource.</text>
+                    }
+                    else if (statusCode == "500")
+                    {
+                        <text>We're experiencing technical difficulties. Please try again later.</text>
+                    }
+                    else
+                    {
+                        <text>An unexpected error occurred while processing your request.</text>
+                    }
+                </p>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-center gap-3 mb-4">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
+                        <i class="fas fa-home me-2"></i>Go Home
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-arrow-left me-2"></i>Go Back
+                    </button>
+                    <a asp-controller="Restaurants" asp-action="Index" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-utensils me-2"></i>Browse Restaurants
+                    </a>
+                </div>
+
+                <!-- Additional Help -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-question-circle text-info me-2"></i>Need Help?
+                        </h5>
+                        <p class="card-text text-muted">
+                            If you continue to experience issues, try these steps:
+                        </p>
+                        <ul class="list-unstyled text-start">
+                            <li class="mb-2">
+                                <i class="fas fa-refresh text-success me-2"></i>
+                                Refresh the page or try again in a few minutes
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-history text-info me-2"></i>
+                                Clear your browser cache and cookies
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-shield-alt text-warning me-2"></i>
+                                Make sure you're logged in with the correct account
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Development Info -->
+                @if (Model?.ShowRequestId == true)
+                {
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-muted">
+                            <i class="fas fa-code me-2"></i>Technical Information
+                        </h6>
+                        <p class="mb-0">
+                            <strong>Request ID:</strong> <code class="text-danger">@Model.RequestId</code>
+                        </p>
+                        <small class="text-muted">
+                            Please include this information when contacting support.
+                        </small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-icon {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+    
+    .card {
+        transition: transform 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+</style>
