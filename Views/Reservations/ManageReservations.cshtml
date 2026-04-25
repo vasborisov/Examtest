@@ -139,18 +139,7 @@
                                             <td>
                                                 <span class="badge bg-info">@reservation.PeopleCount</span>
                                             </td>
-                                            <td>
-                                                @if (!string.IsNullOrEmpty(reservation.Comment))
-                                                {
-                                                    <span title="@reservation.Comment">
-                                                        @(reservation.Comment.Length > 30 ? reservation.Comment.Substring(0, 30) + "..." : reservation.Comment)
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">No comment</span>
-                                                }
-                                            </td>
+
                                             <td>
                                                 @switch (reservation.Status)
                                                 {
