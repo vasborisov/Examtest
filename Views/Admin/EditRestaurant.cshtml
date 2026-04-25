@@ -34,7 +34,7 @@
                     <!-- Validation Summary -->
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-                    <form asp-action="EditRestaurant" method="post">
+                    <form asp-action="EditRestaurant" method="post" enctype="multipart/form-data">
                         <input asp-for="Id" type="hidden" />
                         
                         <div class="row">
@@ -49,7 +49,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating">
-                                    <select asp-for="OwnerId" class="form-select form-select-lg" asp-items="ViewData["OwnerId"] as SelectList">
+                                    <select asp-for="OwnerId" class="form-select form-select-lg" asp-items="ViewBag.RestaurantOwners as SelectList">
                                         <option value="">Select Owner...</option>
                                     </select>
                                     <label class="form-label">
@@ -102,10 +102,26 @@
                         </div>
 
                         <div class="mb-4">
-                            <div class="form-floating">
+                            <!-- Current Image Display -->
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-image"></i> Current Image
+                                    </label>
+                                    <div class="border rounded p-3 bg-light">
+                                        <img src="@Model.ImageUrl" alt="Current restaurant image" 
+                                             class="img-fluid rounded" style="max-height: 200px;">
+                                        <small class="d-block text-muted mt-2">Current image</small>
+                                    </div>
+                                </div>
+                            }
+                            
+                            <!-- Image URL Input -->
+                            <div class="form-floating mb-3">
                                 <input asp-for="ImageUrl" class="form-control form-control-lg" placeholder="Image URL">
                                 <label asp-for="ImageUrl" class="form-label">
-                                    <i class="fas fa-image"></i> Image URL
+                                    <i class="fas fa-link"></i> Image URL
                                 </label>
                                 <span asp-validation-for="ImageUrl" class="text-danger small"></span>
                             </div>
